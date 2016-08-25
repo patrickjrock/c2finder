@@ -15,26 +15,49 @@ import random
 from fasta import Fasta
 
 hydrophobicity = {
-  'L': 97,
-  'I': 99,
-  'F': 100,
-  'W': 97,
-  'V': 76,
-  'M': 74,
-  'C': 49,
-  'Y': 63,
-  'A': 41,
-  'T': 13,
-  'E': -31,
-  'G': 0,
-  'S': -5,
-  'Q': -10,
-  'D': -55,
-  'R': -14,
-  'K': -23,
-  'N': -28,
-  'H': 8,
-  'P': -46,
+  'A': -0.519,
+  'C': -1.343,
+  'D': 1.050,
+  'E': 1.357,
+  'F': -1.006,
+  'G': -0.384,
+  'H': 0.336,
+  'I': -1.239,
+  'K': 1.831,
+  'L': -1.019,
+  'M': -0.663,
+  'N': 0.945,
+  'P': 0.189,
+  'Q': 0.931,
+  'R': 1.538,
+  'S': -0.228,
+  'T': -0.032,
+  'V': -1.337,
+  'W': -0.595,
+  'Y': 0.260
+}
+
+structure = {
+  'A': -1.302,
+  'C': 0.465,
+  'D': 0.302,
+  'E': -1.453,
+  'F': -0.590,
+  'G': 1.652,
+  'H': -0.417,
+  'I': -0.547,
+  'K': -0.561,
+  'L': -0.987,
+  'M': -1.524,
+  'N': 0.828,
+  'P': 2.081,
+  'Q': -0.055,
+  'R': 1.502,
+  'S': -4.760,
+  'T': 2.213,
+  'V': -0.544,
+  'W': 0.672,
+  'Y': 3.097
 }
 
 #5fq9
@@ -73,23 +96,26 @@ class Align:
     return align1
 
   def get_features(self, pdb_code):
-    query = Fasta(pdb_code)
-    align = self.get_alignment(self.template, query)
-    
-    features = []
     try:
+      query = Fasta(pdb_code)
+      align = self.get_alignment(self.template, query)
+    
+      features = []
       for i, c in enumerate(align[0][0]):
         if c == '-':
           pass
         else: 
           amino_acid = align[0][1][i]
           try:
+            features.append(structure[amino_acid])
             features.append(hydrophobicity[amino_acid])
           except:
             features.append(0)
+            features.append(0)
+      print len(features)
       return np.array(features)
     except:
-      return np.array([0 for i in range(0,len(self.template.seqs[0]))] )
+      return [0 for i in range(0,236)]
 
 class Classifier: 
   def update_model(self, data, target):
@@ -144,8 +170,8 @@ def get_data(fname, targ, n=2):
   return adata, atarget
 
 def test_build():
-  rand_data, rand_target = get_data('no.txt', 0, 100)
-  c2_data, c2_target = get_data('c2.txt', 1)
+  rand_data, rand_target = get_data('training_no.txt', 0, 1000)
+  c2_data, c2_target = get_data('training_c2.txt', 1)
   fdata = data + rand_data + c2_data
   ftarget = target + rand_target + c2_target
   
@@ -155,11 +181,18 @@ def test_build():
 def test_pickle():
   return Classifier() 
 
-def test(c, f):
+def evaluate(c, f):
   rcsb = open(f)
+  yes = 0
+  no = 0
   for i, line in enumerate(rcsb):
     try:
-      print c.predict(line[:-1])
+      p = c.predict(line[:-1])
+      if p == np.array([1]):
+        yes = yes + 1
+      else:
+        no = no + 1
     except IndexError:
       print "IndexError"
   rcsb.close()
+  return (yes, no)
