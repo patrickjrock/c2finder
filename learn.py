@@ -1,9 +1,13 @@
+import pickle
 import urllib2
 from Bio import pairwise2
 from sklearn import svm
 import sklearn
 from sklearn.feature_selection import RFE
+
 from sklearn.linear_model import PassiveAggressiveClassifier as pac
+from sklearn.linear_model import Perceptron as perceptron
+
 import numpy as np
 import sys
 
@@ -35,7 +39,6 @@ hydrophobicity = {
 #5fq9
 data = [
   '2nsq',
-  #'319b',
   '2dmh',
   '2Fk9',
   '2ep6',
@@ -84,29 +87,45 @@ class Align:
           features.append(0)
     return np.array(features)
 
-class Clf: 
+class Classifier: 
+  def update_model(self, data, target):
+      tdata = np.array(map(lambda x:self.align.get_features(x), data))
+      self.model.partial_fit(tdata, target, classes=[1,0])
 
+  def build_out_of_core(self):
+    n = int(len(self.data) / 100)
+    split_data = np.array_split(self.data, n)
+    split_target = np.array_split(self.data, n)
+    for i in range(0,len(split_data)):
+      self.update_model(split_data[i], split_target[i])      
 
-
-  def __init__(self, d, t, name="passive_aggressive", n=10):
+  def build_model(self, d, t):
     self.data = d
     self.target = t
     self.align = Align("4wee") 
-    self.tdata = np.array(map(lambda x:self.align.get_features(x), self.data))
-    
+    self.model = perceptron()
+    if len(self.data) > 1000:
+      self.build_out_of_core()
+    else:    
+      self.update_model(d, t)
 
-    clf = pac()
+  def save_model(self, fname):
+    s = pickle.dump(self.model, open('pickle.dat','wb'))
+ 
+  def load_model(self, fname):  
+    self.model = pickle.load(open('pickle.dat', 'rb'))
 
-    #rfe = RFE(estimator = clf, n_features_to_select=n)
-    clf.fit(self.tdata, self.target)
-    self.model = clf
+  def __init__(self, d=None, t=None):
+    if d == None or t == None:
+      self.load_model('pickle.data')
+    else:
+      self.build_model(d,t)
+      self.save_model('pickle.data')
 
   def predict(self, pdb_code):
-    features = self.align.get_features(pdb_code)
-    if self.model.predict(features.reshape(1,-1)) == np.array([1]):
-      return "yes"
-    else:
-      return "no"
+    align = Align('4wee')
+    features = align.get_features(pdb_code)
+    return self.model.predict(features.reshape(1,-1))
   
 def get_data(fname, targ):
   f = open(fname)
@@ -119,21 +138,36 @@ def get_data(fname, targ):
   assert len(adata) == len(atarget)
   return adata, atarget
 
-sys.stderr.write("getting data...\n")
-rand_data, rand_target = get_data('no.txt', 0)
-fdata = data + rand_data
-ftarget = target + rand_target
+def test_build():
+  rand_data, rand_target = get_data('no.txt', 0)
+  fdata = data + rand_data
+  ftarget = target + rand_target
+  
+  print fdata
+  print ftarget
 
-print fdata
-print ftarget
+  c = Classifier(fdata, ftarget)
+  return c
 
-sys.stderr.write("building model...\n")
-c = Clf(fdata, ftarget)
+def test_pickle():
+  return Classifier() 
 
-rcsb = open(sys.argv[1])
-for i, line in enumerate(rcsb):
-  try:
-    print line[:-1] + ' ' + c.predict(line[:-1])
-  except IndexError:
-    print "no"
-rcsb.close()
+def test():
+  sys.stderr.write("getting data...\n")
+  rand_data, rand_target = get_data('no.txt', 0)
+  fdata = data + rand_data
+  ftarget = target + rand_target
+
+  print fdata
+  print ftarget
+
+  sys.stderr.write("building model...\n")
+  c = Classifier(fdata, ftarget)
+
+  rcsb = open(sys.argv[1])
+  for i, line in enumerate(rcsb):
+    try:
+      print line[:-1] + ' ' + c.predict(line[:-1])
+    except IndexError:
+      print "no"
+  rcsb.close()
