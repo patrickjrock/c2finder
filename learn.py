@@ -10,6 +10,7 @@ from sklearn.linear_model import Perceptron as perceptron
 
 import numpy as np
 import sys
+import random
 
 from fasta import Fasta
 
@@ -76,21 +77,24 @@ class Align:
     align = self.get_alignment(self.template, query)
     
     features = []
-    for i, c in enumerate(align[0][0]):
-      if c == '-':
-        pass
-      else: 
-        amino_acid = align[0][1][i]
-        try:
-          features.append(hydrophobicity[amino_acid])
-        except:
-          features.append(0)
-    return np.array(features)
+    try:
+      for i, c in enumerate(align[0][0]):
+        if c == '-':
+          pass
+        else: 
+          amino_acid = align[0][1][i]
+          try:
+            features.append(hydrophobicity[amino_acid])
+          except:
+            features.append(0)
+      return np.array(features)
+    except:
+      return np.array([0 for i in range(0,len(self.template.seqs[0]))] )
 
 class Classifier: 
   def update_model(self, data, target):
       tdata = np.array(map(lambda x:self.align.get_features(x), data))
-      self.model.partial_fit(tdata, target, classes=[1,0])
+      self.model.fit(tdata, target)
 
   def build_out_of_core(self):
     n = int(len(self.data) / 100)
@@ -103,11 +107,11 @@ class Classifier:
     self.data = d
     self.target = t
     self.align = Align("4wee") 
-    self.model = perceptron()
-    if len(self.data) > 1000:
-      self.build_out_of_core()
-    else:    
-      self.update_model(d, t)
+    self.model = svm.SVC()
+    #if len(self.data) > 50000:
+    #  self.build_out_of_core()
+    #else:    
+    self.update_model(d, t)
 
   def save_model(self, fname):
     s = pickle.dump(self.model, open('pickle.dat','wb'))
@@ -127,11 +131,12 @@ class Classifier:
     features = align.get_features(pdb_code)
     return self.model.predict(features.reshape(1,-1))
   
-def get_data(fname, targ):
+def get_data(fname, targ, n=2):
   f = open(fname)
   adata = []
   atarget = []
   for i, line in enumerate(f):
+    if random.randint(1,n) == 1:
       adata.append(line[:-1])
       atarget.append(targ)
   f.close()
@@ -139,35 +144,22 @@ def get_data(fname, targ):
   return adata, atarget
 
 def test_build():
-  rand_data, rand_target = get_data('no.txt', 0)
-  fdata = data + rand_data
-  ftarget = target + rand_target
+  rand_data, rand_target = get_data('no.txt', 0, 100)
+  c2_data, c2_target = get_data('c2.txt', 1)
+  fdata = data + rand_data + c2_data
+  ftarget = target + rand_target + c2_target
   
-  print fdata
-  print ftarget
-
   c = Classifier(fdata, ftarget)
   return c
 
 def test_pickle():
   return Classifier() 
 
-def test():
-  sys.stderr.write("getting data...\n")
-  rand_data, rand_target = get_data('no.txt', 0)
-  fdata = data + rand_data
-  ftarget = target + rand_target
-
-  print fdata
-  print ftarget
-
-  sys.stderr.write("building model...\n")
-  c = Classifier(fdata, ftarget)
-
-  rcsb = open(sys.argv[1])
+def test(c, f):
+  rcsb = open(f)
   for i, line in enumerate(rcsb):
     try:
-      print line[:-1] + ' ' + c.predict(line[:-1])
+      print c.predict(line[:-1])
     except IndexError:
-      print "no"
+      print "IndexError"
   rcsb.close()
