@@ -51,13 +51,83 @@ structure = {
   'M': -1.524,
   'N': 0.828,
   'P': 2.081,
-  'Q': -0.055,
+  'Q': -0.179,
+  'R': -0.055,
+  'S': 1.399,
+  'T': 0.326,
+  'V': -0.279,
+  'W': 0.009,
+  'Y': 0.830
+}
+
+bulk = {
+  'A': -0.733,
+  'C': -0.862,
+  'D': -3.656,
+  'E': 1.477,
+  'F': 1.891,
+  'G': 1.330,
+  'H': -1.673,
+  'I': 2.131,
+  'K': 0.553,
+  'L': -1.505,
+  'M': 2.219,
+  'N': 1.299,
+  'P': -1.628,
+  'Q': -3.005,
   'R': 1.502,
   'S': -4.760,
   'T': 2.213,
   'V': -0.544,
   'W': 0.672,
   'Y': 3.097
+}
+
+composition = {
+  'A': 1.570,
+  'C': -1.020,
+  'D': -0.259,
+  'E': 0.113,
+  'F': -0.397,
+  'G': 1.045,
+  'H': -1.474,
+  'I': 0.393,
+  'K': -0.277,
+  'L': 1.266,
+  'M': -1.005,
+  'N': -0.169,
+  'P': 0.421,
+  'Q': -0.503,
+  'R': 0.440,
+  'S': 0.670,
+  'T': 0.908,
+  'V': 1.242,
+  'W': -2.128,
+  'Y': -0.838
+}
+
+
+charge = {
+  'A': -0.146,
+  'C': -0.255,
+  'D': -3.242,
+  'E': -0.837,
+  'F': 0.412,
+  'G': 2.064,
+  'H': -0.078,
+  'I': 0.816,
+  'K': 1.648,
+  'L': -0.912,
+  'M': 1.212,
+  'N': 0.933,
+  'P': -1.392,
+  'Q': -1.853,
+  'R': 2.897,
+  'S': -2.647,
+  'T': 1.313,
+  'V': -1.262,
+  'W': -0.184,
+  'Y': 1.512
 }
 
 #5fq9
@@ -108,19 +178,18 @@ class Align:
           amino_acid = align[0][1][i]
           try:
             features.append(structure[amino_acid])
-            features.append(hydrophobicity[amino_acid])
           except:
             features.append(0)
-            features.append(0)
-      print len(features)
       return np.array(features)
     except:
-      return [0 for i in range(0,236)]
+      return [0 for i in range(0,118)]
 
 class Classifier: 
   def update_model(self, data, target):
       tdata = np.array(map(lambda x:self.align.get_features(x), data))
+#      rfe = RFE(estimator=self.model, n_features_to_select=50, step=1)
       self.model.fit(tdata, target)
+ #     self.model = rfe
 
   def build_out_of_core(self):
     n = int(len(self.data) / 100)
@@ -133,7 +202,7 @@ class Classifier:
     self.data = d
     self.target = t
     self.align = Align("4wee") 
-    self.model = svm.SVC()
+    self.model = svm.SVC(kernel="linear", C=1)
     #if len(self.data) > 50000:
     #  self.build_out_of_core()
     #else:    
