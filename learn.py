@@ -5,6 +5,7 @@ from sklearn import svm
 import sklearn
 from sklearn.feature_selection import RFE
 
+from sklearn.ensemble import RandomForestClassifier as rfc
 from sklearn.linear_model import PassiveAggressiveClassifier as pac
 from sklearn.linear_model import Perceptron as perceptron
 
@@ -161,35 +162,52 @@ class Align:
     self.template = Fasta("4wee")
     self.template.seqs[0] = self.template.seqs[0][26:]
 
-  def get_alignment(self, f1, f2):
-    align1 = pairwise2.align.localms(f1.seqs[0], f2.seqs[0], 2, -1, -5, -1)
+  def get_alignment(self, s1, s2):
+    align1 = pairwise2.align.localms(s1, s2, 2, -1, -5, -1)
     return align1
+
+  def get_features_from_string(self, s1, s2):
+      features = []
+      for i, c in enumerate(s1):
+        if c == '-':
+          pass
+        else: 
+          amino_acid = s2[i]
+          try:
+            features.append(structure[amino_acid])
+            features.append(hydrophobicity[amino_acid])
+          except:
+            features.append(0)
+            features.append(0)
+      return features
+
+  def get_features_rolling(self, pdb_code):
+      query = Fasta(pdb_code)
+      qstr = query.seqs[0]
+      if len(qstr) < 150:
+        align = self.get_alignment(self.template.seqs[0], qstr)
+        return [self.get_features_from_string(align[0][0], align[0][1])]
+      else:
+        fv = []
+        for i in range(0, len(qstr)-150): 
+          align = self.get_alignment(self.template.seqs[0], qstr[i : i+150])
+          fv.append(self.get_features_from_string(align[0][0], align[0][1]))
+        return fv
 
   def get_features(self, pdb_code):
     try:
       query = Fasta(pdb_code)
-      align = self.get_alignment(self.template, query)
-    
-      features = []
-      for i, c in enumerate(align[0][0]):
-        if c == '-':
-          pass
-        else: 
-          amino_acid = align[0][1][i]
-          try:
-            features.append(structure[amino_acid])
-          except:
-            features.append(0)
-      return np.array(features)
+      align = self.get_alignment(self.template.seqs[0], query.seqs[0])
+
+      return np.array(self.get_features_from_string(align[0][0], align[0][1]))    
     except:
-      return [0 for i in range(0,118)]
+      return np.array([0 for i in range(0,2*118)])
 
 class Classifier: 
   def update_model(self, data, target):
       tdata = np.array(map(lambda x:self.align.get_features(x), data))
-#      rfe = RFE(estimator=self.model, n_features_to_select=50, step=1)
+      #rfe = RFE(estimator=self.model, n_features_to_select=100, step=1)
       self.model.fit(tdata, target)
- #     self.model = rfe
 
   def build_out_of_core(self):
     n = int(len(self.data) / 100)
@@ -202,7 +220,7 @@ class Classifier:
     self.data = d
     self.target = t
     self.align = Align("4wee") 
-    self.model = svm.SVC(kernel="linear", C=1)
+    self.model = rfc(n_estimators = 100)
     #if len(self.data) > 50000:
     #  self.build_out_of_core()
     #else:    
@@ -225,7 +243,13 @@ class Classifier:
     align = Align('4wee')
     features = align.get_features(pdb_code)
     return self.model.predict(features.reshape(1,-1))
-  
+
+  def locate(self, pdb_code):
+    align = Align('4wee')
+    fv =  align.get_features_rolling(pdb_code)
+    fv = map(lambda x : np.array(x).reshape(1,-1), fv)
+    return map(self.model.predict, fv)    
+ 
 def get_data(fname, targ, n=2):
   f = open(fname)
   adata = []
@@ -239,7 +263,7 @@ def get_data(fname, targ, n=2):
   return adata, atarget
 
 def test_build():
-  rand_data, rand_target = get_data('training_no.txt', 0, 1000)
+  rand_data, rand_target = get_data('training_no.txt', 0, 500)
   c2_data, c2_target = get_data('training_c2.txt', 1)
   fdata = data + rand_data + c2_data
   ftarget = target + rand_target + c2_target
