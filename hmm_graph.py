@@ -1,5 +1,5 @@
 import networkx as nx
-
+import hmmlearn
 
 class HMM_graph:
   """ Class that represents hmm as a graph
@@ -20,6 +20,9 @@ class HMM_graph:
       self.G.add_edge(i,i+1)
 
   def add_jump(self, n):
+    pass
+
+  def add_loop(self, n):
     pass
 
   def get_transition():
