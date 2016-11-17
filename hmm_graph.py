@@ -20,7 +20,7 @@ class HMM_graph:
       self.G.add_edge(i,i+1)
 
   def add_jump(self, n):
-    pass
+    pass #Adding something
 
   def add_loop(self, n):
     pass
