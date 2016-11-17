@@ -29,9 +29,6 @@ class HMM_graph:
       self.G.add_edge(i,i+1)
 
   def add_jump(self, n):
-      """
-      Function to add a block of size n of jump nodes
-      """
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution()) # using uniform distribution for now
@@ -41,7 +38,6 @@ class HMM_graph:
         self.G.add_edge(node_range[0], i)
 
   def add_loop(self, n):
-      """Function to add a block of size n of loop nodes"""
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution())
