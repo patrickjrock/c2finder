@@ -15,16 +15,11 @@ hmm.add_jump(200)
 
 model = hmm.get_model()
 
-
-for i in range(0,21):
-  print [i] in training[0].hmmseq().tolist()
-
-
 training = [t.hmmseq() for t in training]
 
-
-X = np.concatenate(training)
-model.fit(X)
+Xt = np.concatenate(training)
+ls = map(len, training)
+#model.fit(Xt, lengths=ls)
 
 
 X, Z = model.sample(200)
