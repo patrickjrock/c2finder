@@ -25,8 +25,15 @@ class HMM_graph:
   def add_loop(self, n):
     pass
 
-  def get_transition():
-    pass
+  def norm(self, raw):
+    return [float(i)/sum(raw) for i in raw]
+
+  def get_transition(self):
+    """ converts the adjacency matrix to the transition matrix by normalizing the rows """
+    A = nx.adjacency_matrix(self.G).todense().getA()
+    return [self.norm(row) for row in A]
+
+pass
   
 
 def test():
@@ -34,6 +41,8 @@ def test():
   hmm.add_linear(10)
   print hmm.G.node
   print hmm.G.edges()
+  print hmm.get_transition()
+  
 
 test()
 
