@@ -27,6 +27,8 @@ class HMM_graph:
       self.G.add_node(i) # abstract out the distribution later
     for i in node_range[:-1]:
       self.G.add_edge(i,i+1)
+    if node_range[0] != 0: 
+      self.G.add_edge(node_range[0]-1, node_range[0])
 
   def add_jump(self, n):
     node_range = range(self.get_max(), self.get_max()+n)
@@ -36,6 +38,9 @@ class HMM_graph:
         self.G.add_edge(i, i+1)
     for i in node_range[2:]:
         self.G.add_edge(node_range[0], i)
+    if node_range[0] != 0: 
+      self.G.add_edge(node_range[0]-1, node_range[0])
+
 
   def add_loop(self, n):
     node_range = range(self.get_max(), self.get_max()+n)
@@ -44,6 +49,9 @@ class HMM_graph:
     for i in node_range[:-1]:
         self.G.add_edge(i, i+1) # Connect to forward node
         self.G.add_edge(i, i) # Connect node to itself
+    if node_range[0] != 0: 
+      self.G.add_edge(node_range[0]-1, node_range[0])
+
 
   def get_transition(self):
     """ converts the adjacency matrix to the transition matrix by normalizing the rows """

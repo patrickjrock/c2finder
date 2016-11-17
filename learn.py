@@ -6,10 +6,8 @@ training = map(Fasta, ['1rsy','1tjm','1tjx', '1uov'])
 
 hmm = HMM_graph()
 hmm.add_linear(10)
-hmm.add_linear(10)
+hmm.add_loop(10)
 hmm.add_linear(10)
 model = hmm.get_model()
 
-print hmm.G.node
-print hmm.G.edges()
-
+print model.sample(40)
