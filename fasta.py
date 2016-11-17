@@ -19,9 +19,7 @@ aadict = { 'A' : 1,
 	   'T' : 17,
 	   'W' : 18,
 	   'Y' : 19,
-	   'V' : 20, 
-	   'B' : 21,
-	   'Z' : 22 }
+	   'V' : 20 } 
 
 class Fasta:
   """encapsulates FASTA fetching from rcsb and parsing"""

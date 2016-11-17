@@ -8,6 +8,12 @@ class HMM_graph:
   def __init__(self):
     self.G = nx.Graph()
 
+  def norm(self, raw):
+    return [float(i)/sum(raw) for i in raw]
+
+  def uniform_distribution(self):
+    v = [1 for i in range(1,21)]
+    return self.norm(v)
 
   def get_max(self):
     return len(self.G.node)
@@ -25,9 +31,6 @@ class HMM_graph:
   def add_loop(self, n):
     pass
 
-  def norm(self, raw):
-    return [float(i)/sum(raw) for i in raw]
-
   def get_transition(self):
     """ converts the adjacency matrix to the transition matrix by normalizing the rows """
     A = nx.adjacency_matrix(self.G).todense().getA()
@@ -40,7 +43,7 @@ def test():
   print hmm.G.node
   print hmm.G.edges()
   print hmm.get_transition()
-  
+  print hmm.uniform_distribution()
 
 test()
 
