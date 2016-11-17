@@ -1,4 +1,5 @@
 import urllib2
+import numpy as np
 
 aadict = { 'A' : 0,
 	   'R' : 1,
@@ -51,6 +52,10 @@ class Fasta:
 
   def seq2int(self):
     return seq2int(self.seqs[0])
+
+  def hmmseq(self):
+    seq = self.seq2int()
+    return np.array([[x] for x in seq])
 
 def test():
   p = Fasta('4wee')
