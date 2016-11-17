@@ -69,7 +69,7 @@ class HMM_graph:
 
 def test():
   hmm = HMM_graph()
-  hmm.add_linear(10)
+  hmm.add_jump(4)
   print hmm.G.node
   print hmm.G.edges()
   print "transition matrix..."
