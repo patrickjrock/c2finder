@@ -38,7 +38,12 @@ class HMM_graph:
         self.G.add_edge(node_range[0], i)
 
   def add_loop(self, n):
-    pass
+    node_range = range(self.get_max(), self.get_max()+n)
+    for i in node_range:
+        self.G.add_node(i, e=self.uniform_distribution())
+    for i in node_range:
+        self.G.add_edge(i, i+1) # Connect to forward node
+        self.G.add_edge(i, i) # Connect node to itself
 
   def get_transition(self):
     """ converts the adjacency matrix to the transition matrix by normalizing the rows """
