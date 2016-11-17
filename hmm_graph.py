@@ -24,7 +24,7 @@ class HMM_graph:
   def add_linear(self, n):
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
-      self.G.add_node(i, e=self.uniform_distribution()) # abstract out the distribution later
+      self.G.add_node(i) # abstract out the distribution later
     for i in node_range[:-1]:
       self.G.add_edge(i,i+1)
 
