@@ -21,7 +21,7 @@ class HMM_graph:
   def add_linear(self, n):
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
-      self.G.add_node(i)
+      self.G.add_node(i, e=self.uniform_distribution()) # abstract out the distribution later
     for i in node_range[:-1]:
       self.G.add_edge(i,i+1)
 
@@ -36,6 +36,10 @@ class HMM_graph:
     A = nx.adjacency_matrix(self.G).todense().getA()
     return [self.norm(row) for row in A]
 
+  def get_emission(self):
+    """ returns the emission matrix for the hmm. If no distribution is present in a node assume uniform """
+    pass
+
 
 def test():
   hmm = HMM_graph()
@@ -44,6 +48,7 @@ def test():
   print hmm.G.edges()
   print hmm.get_transition()
   print hmm.uniform_distribution()
+  print hmm.G.node[1]['e']
 
 test()
 
