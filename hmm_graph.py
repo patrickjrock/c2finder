@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 from hmmlearn.hmm import MultinomialHMM
 
 class HMM_graph:
@@ -34,20 +35,25 @@ class HMM_graph:
   def get_transition(self):
     """ converts the adjacency matrix to the transition matrix by normalizing the rows """
     A = nx.adjacency_matrix(self.G).todense().getA()
-    return [self.norm(row) for row in A]
+    A = [self.norm(row) for row in A]
+    return np.array(A)
 
   def get_emission(self):
     """ returns the emission matrix for the hmm. If no distribution is present in a node assume uniform """
     # for now just assume everything is uniform
-    return [self.uniform_distribution() for i in range(0, self.get_max())]
+    E =  [self.uniform_distribution() for i in range(0, self.get_max())]
+    return np.array(E)
 
   def get_start(self):
     """ returns the start probability matrix, just points to the first node"""
-    pass
+    S = [0 for i in range(0, self.get_max())]
+    S[0] = 1
+    return np.array(S)
 
   def get_model(self):
     """ returns a multinomial hmm"""
     model = MultinomialHMM(n_components=self.get_max())
+    model.startprob_ = self.get_start()
     model.transmat_ = self.get_transition()
     model.emissionprob_ = self.get_emission()
     return model
