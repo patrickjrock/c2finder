@@ -29,7 +29,9 @@ class HMM_graph:
       self.G.add_edge(i,i+1)
 
   def add_jump(self, n):
-    pass #Adding something
+    node_range = range(self.get_max(), self.get_max()+n)
+    for i in node_range:
+        #self.G.add_node(n, attr_dict)
 
   def add_loop(self, n):
     pass
