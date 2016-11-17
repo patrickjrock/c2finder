@@ -33,8 +33,6 @@ class HMM_graph:
     A = nx.adjacency_matrix(self.G).todense().getA()
     return [self.norm(row) for row in A]
 
-pass
-  
 
 def test():
   hmm = HMM_graph()
