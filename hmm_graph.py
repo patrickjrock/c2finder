@@ -41,7 +41,7 @@ class HMM_graph:
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution())
-    for i in node_range:
+    for i in node_range[:-1]:
         self.G.add_edge(i, i+1) # Connect to forward node
         self.G.add_edge(i, i) # Connect node to itself
 
@@ -74,7 +74,7 @@ class HMM_graph:
 
 def test():
   hmm = HMM_graph()
-  hmm.add_jump(4)
+  hmm.add_loop(4)
   print hmm.G.node
   print hmm.G.edges()
   print "transition matrix..."
