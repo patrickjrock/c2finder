@@ -34,8 +34,8 @@ class HMM_graph:
         self.G.add_node(i, e=self.uniform_distribution()) # using uniform distribution for now
     for i in node_range[:-1]:
         self.G.add_edge(i, i+1)
-        for k in node_range[2:]:
-            self.G.add_edge(i, k)
+    for i in node_range[2:]:
+        self.G.add_edge(1, i)
 
   def add_loop(self, n):
     pass
