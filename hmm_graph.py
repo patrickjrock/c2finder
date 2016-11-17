@@ -35,7 +35,7 @@ class HMM_graph:
     for i in node_range[:-1]:
         self.G.add_edge(i, i+1)
     for i in node_range[2:]:
-        self.G.add_edge(1, i)
+        self.G.add_edge(node_range[0], i)
 
   def add_loop(self, n):
     pass
