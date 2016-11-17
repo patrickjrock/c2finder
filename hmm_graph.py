@@ -18,6 +18,11 @@ class HMM_graph:
     v = [1 for i in range(1,21)]
     return self.norm(v)
 
+  def frequency_distribution(self, seq):
+    """returns a distribution representing the frequency of aas in seq"""
+    freq = [0 for i in range(1,21)]
+      
+
   def get_max(self):
     return len(self.G.node)
 
@@ -32,7 +37,7 @@ class HMM_graph:
       self.G.add_edge(node_range[0]-1, node_range[0])
 
   def add_jump(self, n):
-      """Add a jump block of size n"""
+    """Add a jump block of size n"""
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution()) # using uniform distribution for now
@@ -45,7 +50,7 @@ class HMM_graph:
 
 
   def add_loop(self, n):
-      """Add a loop block of size n"""
+    """Add a loop block of size n"""
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution())
