@@ -31,7 +31,11 @@ class HMM_graph:
   def add_jump(self, n):
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
-        #self.G.add_node(n, attr_dict)
+        self.G.add_node(i, e=self.uniform_distribution()) # using uniform distribution for now
+    for i in node_range[:-1]:
+        self.G.add_edge(i, i+1)
+        for k in node_range[:-1]:
+            self.G.add_edge(i, k)
 
   def add_loop(self, n):
     pass
