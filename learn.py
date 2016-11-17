@@ -13,4 +13,9 @@ hmm.add_linear(1, dist)
 model = hmm.get_model()
 
 X, Z = model.sample(200)
-print X
+
+out = ""
+for row in X:
+  print row[0]
+  out += int2aa(row[0])
+print out

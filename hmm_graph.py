@@ -80,7 +80,7 @@ class HMM_graph:
   def get_emission(self):
     """ returns the emission matrix for the hmm. If no distribution is present in a node assume uniform """
     # for now just assume everything is uniform
-    E =  [self.uniform_distribution() for i in range(0, self.get_max())]
+    E =  [self.G.node[i]['e'] for i in range(0, self.get_max())]
     return np.array(E)
 
   def get_start(self):

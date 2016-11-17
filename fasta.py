@@ -1,28 +1,36 @@
 import urllib2
 
-aadict = { 'A' : 1,
-	   'R' : 2,
-	   'N' : 3,
-	   'D' : 4,
-	   'C' : 5,
-	   'Q' : 6,
-	   'E' : 7,
-	   'G' : 8,
-	   'H' : 9,
-	   'I' : 10,
-	   'L' : 11,
-	   'K' : 12,
-	   'M' : 13,
-	   'F' : 14,
-	   'P' : 15,
-	   'S' : 16,
-	   'T' : 17,
-	   'W' : 18,
-	   'Y' : 19,
-	   'V' : 20 }
+aadict = { 'A' : 0,
+	   'R' : 1,
+	   'N' : 2,
+	   'D' : 3,
+	   'C' : 4,
+	   'Q' : 5,
+	   'E' : 6,
+	   'G' : 7,
+	   'H' : 8,
+	   'I' : 9,
+	   'L' : 10,
+	   'K' : 11,
+	   'M' : 12,
+	   'F' : 13,
+	   'P' : 14,
+	   'S' : 15,
+	   'T' : 16,
+	   'W' : 17,
+	   'Y' : 18,
+	   'V' : 19 }
+
+inv_aadict = {v: k for k, v in aadict.iteritems()}
 
 def aa2int(aa):
   return aadict[aa]
+
+def int2aa(i):
+  return inv_aadict[i]
+
+def int2seq(i):
+  return [int2aa(c) for c in i]
 
 def seq2int(seq):
   return [aa2int(c) for c in seq]
