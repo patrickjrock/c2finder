@@ -22,6 +22,7 @@ class HMM_graph:
     return len(self.G.node)
 
   def add_linear(self, n):
+    """Add a linear block of size n"""
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
       self.G.add_node(i) # abstract out the distribution later
@@ -29,6 +30,7 @@ class HMM_graph:
       self.G.add_edge(i,i+1)
 
   def add_jump(self, n):
+      """Add a jump block of size n"""
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution()) # using uniform distribution for now
@@ -38,12 +40,14 @@ class HMM_graph:
         self.G.add_edge(node_range[0], i)
 
   def add_loop(self, n):
+      """Add a loop block of size n"""
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
         self.G.add_node(i, e=self.uniform_distribution())
     for i in node_range[:-1]:
         self.G.add_edge(i, i+1) # Connect to forward node
         self.G.add_edge(i, i) # Connect node to itself
+    self.G.add_edge(node_range[-1], node_range[-1])
 
   def get_transition(self):
     """ converts the adjacency matrix to the transition matrix by normalizing the rows """
