@@ -1,5 +1,5 @@
 import networkx as nx
-import hmmlearn
+from hmmlearn.hmm import MultinomialHMM
 
 class HMM_graph:
   """ Class that represents hmm as a graph
@@ -38,7 +38,19 @@ class HMM_graph:
 
   def get_emission(self):
     """ returns the emission matrix for the hmm. If no distribution is present in a node assume uniform """
+    # for now just assume everything is uniform
+    return [self.uniform_distribution() for i in range(0, self.get_max())]
+
+  def get_start(self):
+    """ returns the start probability matrix, just points to the first node"""
     pass
+
+  def get_model(self):
+    """ returns a multinomial hmm"""
+    model = MultinomialHMM(n_components=self.get_max())
+    model.transmat_ = self.get_transition()
+    model.emissionprob_ = self.get_emission()
+    return model
 
 
 def test():
@@ -50,7 +62,8 @@ def test():
   print hmm.uniform_distribution()
   print hmm.G.node[1]['e']
 
-test()
+if __name__ == '__main__':
+  test()
 
 #hmm.add_jump(100)
 #hmm.add_linear(6)
