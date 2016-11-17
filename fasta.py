@@ -19,7 +19,13 @@ aadict = { 'A' : 1,
 	   'T' : 17,
 	   'W' : 18,
 	   'Y' : 19,
-	   'V' : 20 } 
+	   'V' : 20 }
+
+def aa2int(aa):
+  return aadict[aa]
+
+def seq2int(seq):
+  return [aa2int(c) for c in seq]
 
 class Fasta:
   """encapsulates FASTA fetching from rcsb and parsing"""
@@ -35,11 +41,8 @@ class Fasta:
     self.seqs = map(self.parse_record, records)
     self.name = pdb_code
 
-  def aa2int(self, aa):
-    return aadict[aa]
-
   def seq2int(self):
-    return [self.aa2int(c) for c in self.seqs[0]]
+    return seq2int(self.seqs[0])
 
 def test():
   p = Fasta('4wee')

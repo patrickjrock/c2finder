@@ -33,11 +33,14 @@ class HMM_graph:
   def get_max(self):
     return len(self.G.node)
 
-  def add_linear(self, n):
+  def add_linear(self, n, dist=None):
     """Add a linear block of size n"""
+    if dist == None:
+      dist = self.uniform_distribution()
+
     node_range = range(self.get_max(), self.get_max()+n)
     for i in node_range:
-      self.G.add_node(i) # abstract out the distribution later
+      self.G.add_node(i, e=dist) # abstract out the distribution later
     for i in node_range[:-1]:
       self.G.add_edge(i,i+1)
     if node_range[0] != 0: 
