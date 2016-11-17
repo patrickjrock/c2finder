@@ -7,9 +7,11 @@ class HMM_graph:
       outputs matrix representations of graph for use in hmm libraries
   """
   def __init__(self):
-    self.G = nx.Graph()
+    self.G = nx.DiGraph()
 
   def norm(self, raw):
+    if sum(raw) == 0:
+      return raw
     return [float(i)/sum(raw) for i in raw]
 
   def uniform_distribution(self):
@@ -64,6 +66,7 @@ def test():
   hmm.add_linear(10)
   print hmm.G.node
   print hmm.G.edges()
+  print "transition matrix..."
   print hmm.get_transition()
   print hmm.uniform_distribution()
   print hmm.G.node[1]['e']
