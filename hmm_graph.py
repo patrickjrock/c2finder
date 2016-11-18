@@ -91,7 +91,7 @@ class HMM_graph:
 
   def get_model(self):
     """ returns a multinomial hmm"""
-    model = MultinomialHMM(n_components=self.get_max(), params='e', init_params='ste')
+    model = MultinomialHMM(n_components=self.get_max(), params='e', init_params='')
     model.startprob_ = self.get_start()
     model.transmat_ = self.get_transition()
     model.emissionprob_ = self.get_emission()

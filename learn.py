@@ -15,12 +15,19 @@ hmm.add_jump(200)
 
 model = hmm.get_model()
 
+print model.transmat_
+print model.startprob_
+
+
+
 training = [t.hmmseq() for t in training]
 
 Xt = np.concatenate(training)
 ls = map(len, training)
-#model.fit(Xt, lengths=ls)
-
+model.fit(Xt, lengths=ls)
 
 X, Z = model.sample(200)
 print X,Z
+
+print model.transmat_
+print model.startprob_

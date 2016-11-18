@@ -49,6 +49,7 @@ class Fasta:
     records = raw.split('>')[1:] 
     self.seqs = map(self.parse_record, records)
     self.name = pdb_code
+    self.seq = self.seqs[0]
 
   def seq2int(self):
     return seq2int(self.seqs[0])
@@ -57,8 +58,4 @@ class Fasta:
     seq = self.seq2int()
     return np.array([[x] for x in seq])
 
-def test():
-  p = Fasta('4wee')
-  print p.seq2int()
-  print p.seqs[0]
 
