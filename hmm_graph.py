@@ -9,7 +9,8 @@ class HMM_graph:
   def __init__(self):
     self.G = nx.DiGraph()
 
-  def norm(self, raw):
+  @staticmethod
+  def norm(raw):
     if sum(raw) == 0:
       return raw
     return [float(i)/sum(raw) for i in raw]
@@ -19,12 +20,13 @@ class HMM_graph:
     v = [1 for i in range(1,21)]
     return self.norm(v)
 
-  def frequency_distribution(self, seq):
+  @staticmethod
+  def frequency_distribution(seq):
     """returns a distribution representing the frequency of aas in seq"""
     freq = [0 for i in range(1,21)]
     for aa in seq:
       freq[aa] += 1
-    freq = self.norm(freq)
+    freq = HMM_graph.norm(freq)
     if 0 in freq:
       freq = [0.9*float(x) for x in freq]
       freq = [0.1/20+float(x) for x in freq] 
@@ -72,7 +74,9 @@ class HMM_graph:
       self.G.add_edge(node_range[0]-1, node_range[0])
 
   def get_transition(self):
-    """ converts the adjacency matrix to the transition matrix by normalizing the rows """
+    """ converts the adjacency matrix to the transition matrix by normalizing the rows,
+        nodes may contain their own transition probability matrix, the i,j entry is the 
+	probability from transitioning from i to j """
     A = nx.adjacency_matrix(self.G).todense().getA()
     A = [self.norm(row) for row in A]
     return np.array(A)

@@ -24,10 +24,11 @@ training = [t.hmmseq() for t in training]
 
 Xt = np.concatenate(training)
 ls = map(len, training)
-model.fit(Xt, lengths=ls)
+#model.fit(Xt, lengths=ls)
 
 X, Z = model.sample(200)
 print X,Z
 
+print model.emissionprob_
 print model.transmat_
 print model.startprob_
