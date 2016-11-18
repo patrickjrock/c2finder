@@ -23,6 +23,8 @@ def count_emissions(labels, data):
   return e
 
 def emissions(fname):
+  """ emissions are sorted into bins for each state. The emissions for state 1 are in 
+      emissions(fname)[0]"""
   records = get_records('fasta/out.fasta')
   es = []
   for i in range(1,len(records)):
@@ -37,8 +39,21 @@ def emissions(fname):
 
 
 def count_transitions(labels, data):
-  pass
+  t = []
+  last = -1 # last observed state, used to do transition
+  for i in range(0, len(labels)):
+    if data[i] != '-':
+      state = int(labels[i])
+      if last != -1:
+        t.append((last, state))
+      last = state
+  return t
 
-records = get_records('fasta/out.fasta')
-print records
-print emissions('fasta.out.fasta')
+def transitions(fname):
+  """ transitions are not sorted into bins, returns a vector of all transitions """
+  records = get_records('fasta/out.fasta')
+  ts = []
+  for i in range(1, len(records)):
+    ts.extend(count_transitions(records[0], records[i]))
+  return ts 
+
