@@ -4,6 +4,7 @@ from hmmlearn.hmm import MultinomialHMM
 from fasta import *
 import numpy as np
 import sys
+from evaluate import *
 
 ts = transitions('fasta/out.fasta')
 es = emissions('fasta/out.fasta')
@@ -29,9 +30,4 @@ hmm.emissionprob_ = np.array(E)
 hmm.transmat_ = A
 
 
-protein = Fasta(sys.argv[1])
-querey = protein.hmmseq()
-
-pred = hmm.predict(querey)
-print zip(pred,protein.seq)
-print hmm.score(querey)
+print evaluate(hmm)

@@ -20,7 +20,9 @@ aadict = { 'A' : 0,
 	   'T' : 16,
 	   'W' : 17,
 	   'Y' : 18,
-	   'V' : 19 }
+	   'V' : 19,
+	   'U' : 20,
+	   'X' : 21, }
 
 inv_aadict = {v: k for k, v in aadict.iteritems()}
 
