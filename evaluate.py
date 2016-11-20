@@ -40,7 +40,7 @@ def evaluate(model, positives=ps, negatives=ns):
   for n in nresult:
     print str(n[0]) + " not " + n[1][:-1]
 
-def search(model, query, window_size=200):
+def search(model, query, window_size=150):
   """search the query with a scrolling window"""
   maxi = -1
   maxs = -inf
@@ -50,7 +50,6 @@ def search(model, query, window_size=200):
     return -1, model.score(query)
 
   for i in range(0,len(query)-window_size+1):
-    print "trying window " + str(i)
     subquery = query[i:i+window_size]
     score = model.score(subquery)
     if score > maxs:
