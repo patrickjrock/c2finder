@@ -1,8 +1,9 @@
 # Run cross validation stuff and evaluate bias and variance at some point
 from hmmlearn import *
 from hmmlearn.hmm import MultinomialHMM
-from fasta import Fasta
+from fasta import *
 import random
+from numpy import inf
 
 f = file('data/test_c2.txt')
 ps = f.readlines()
@@ -14,11 +15,18 @@ ns = [allns[i] for i in random.sample(range(0,len(allns)), 78)]
 f.close()
 
 
+def run(model, code):
+  protein = Fasta(code)
+  querey = protein.hmmseq()
+  pred = model.predict(querey)
+  pred = zip(protein.seq, pred)
+  score = model.score(querey)
+  return pred, score
+
 def test(model, code):
   """ return score for model given the rcsb code """
   protein = Fasta(code)
   querey = protein.hmmseq()
-  pred = model.predict(querey)
   return model.score(querey)
 
 def evaluate(model, positives=ps, negatives=ns):
@@ -31,3 +39,26 @@ def evaluate(model, positives=ps, negatives=ns):
     print str(p[0]) + " c2 " + p[1][:-1]
   for n in nresult:
     print str(n[0]) + " not " + n[1][:-1]
+
+def search(model, query, window_size=200):
+  """search the query with a scrolling window"""
+  maxi = -1
+  maxs = -inf
+  maxq = ""
+
+  if len(query) < window_size:
+    return -1, model.score(query)
+
+  for i in range(0,len(query)-window_size+1):
+    print "trying window " + str(i)
+    subquery = query[i:i+window_size]
+    score = model.score(subquery)
+    if score > maxs:
+      maxs = score
+      maxi = i
+      maxq = subquery
+  maxp = model.predict(maxq) 
+  maxq = [x[0] for x in maxq]
+  return maxi, maxs, zip(int2seq(maxq), maxp)
+
+

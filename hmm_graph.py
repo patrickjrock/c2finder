@@ -17,19 +17,19 @@ class HMM_graph:
 
   def uniform_distribution(self):
     """returns a distribution with an equal probability of emitting each aa"""
-    v = [1 for i in range(1,21)]
+    v = [1 for i in range(1,23)]
     return self.norm(v)
 
   @staticmethod
-  def frequency_distribution(seq):
+  def frequency_distribution(seq, smooth=0.00001):
     """returns a distribution representing the frequency of aas in seq"""
-    freq = [0 for i in range(1,21)]
+    freq = [0 for i in range(1,23)]
     for aa in seq:
       freq[aa] += 1
     freq = HMM_graph.norm(freq)
     if 0 in freq:
-      freq = [0.9*float(x) for x in freq]
-      freq = [0.1/20+float(x) for x in freq] 
+      freq = [(1-smooth)*float(x) for x in freq]
+      freq = [smooth/22+float(x) for x in freq] 
     return freq
 
   def get_max(self):

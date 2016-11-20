@@ -38,6 +38,12 @@ def int2seq(i):
 def seq2int(seq):
   return [aa2int(c) for c in seq]
 
+def hmmseq(seq):
+  seq = seq2int(seq)
+  return np.array([[x] for x in seq])
+
+
+
 class Fasta:
   """encapsulates FASTA fetching from rcsb and parsing"""
   def parse_record(self, record):
@@ -57,7 +63,5 @@ class Fasta:
     return seq2int(self.seqs[0])
 
   def hmmseq(self):
-    seq = self.seq2int()
-    return np.array([[x] for x in seq])
-
+    return hmmseq(self.seq)
 
