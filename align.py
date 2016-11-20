@@ -13,12 +13,11 @@ def get_records(fname):
   return records
 
 def count_emissions(labels, data):
-  e = []
+  e = [[] for i in range(0,max(labels)]
   for i in range(0, len(labels)):
     if data[i] != '-':
       state = int(labels[i])
-      if state > len(e):
-        e.append([])
+      print state
       e[state-1].append(data[i])
   return e
 

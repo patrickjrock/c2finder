@@ -8,21 +8,27 @@ from evaluate import *
 
 # set up labels for supervised learning
 labels = []
-for i in range(1,53):
+for i in range(1,37):
   labels.append(1)
-labels.append(2)
-labels.append(3)
+labels.extend([2,3,4,5,6,7,8,9,10,11])
+for i in range(47,53):
+  labels.append(12)
+labels.extend([13,14])
+
 for i in range(55,68):
-  labels.append(4)
-labels.extend([5,6,7,8,9,10])
+  labels.append(15)
+labels.extend([16,17,18,19,20,21])
 for i in range(74,211):
-  labels.append(11)
+  labels.append(22)
+print labels
 
 ts = transitions('fasta/out.fasta', labels)
 es = emissions('fasta/out.fasta', labels)
 
 # initial distribution
-I = [1,0,0,0,0,0,0,0,0,0,0]
+I = [0 for x in range(0,22)]
+I[0] = 1
+print len(I)
 
 # generate emission matrix
 E = []
@@ -31,28 +37,18 @@ for e in es:
   E.append(dist)
 
 # generate transition matrix
-A = np.zeros((11,11))
+A = np.zeros((22,22))
 for t in ts:
   A[t[0]-1,t[1]-1] += 1
 A = [HMM_graph.norm(row) for row in A]
 
-hmm = MultinomialHMM(11)
+hmm = MultinomialHMM(22)
 hmm.startprob_ = np.array(I)
 hmm.emissionprob_ = np.array(E)
 hmm.transmat_ = A
 
-#proetin = Fasta(sys.argv[1])
-#query = protein.hmmseq()
+protein = Fasta(sys.argv[1])
+query = protein.hmmseq()
 
-query = """MAHHHHHHGTALQLEPPTVVETLRRGSKFIKWDEETSSRNLVTLRVDPNGFFLYWTGPNMEVDTLDISSIRDTRTGRYAR
-LPKDPKIREVLGFGGPDARLEEKLMTVVSGPDPVNTVFLNFMAVQDDTAKVWSEELFKLAMNILAQNASRNTFLRKAYTK
-LKLQVNQDGRIPVKNILKMFSADKKRVETALESCGLKFNRSESIRPDEFSLEIFERFLNKLCLRPDIDKILLEIGAKGKP
-YLTLEQLMDFINQKQRDPRLNEVLYPPLRPSQARLLIEKYEPNQQFLERDQMSMEGFSRYLGGEENGILPLEALDLSTDM
-TQPLSAYFINSSHNTYLTAGQLAGTSSVEMYRQALLWGCRCVELDVWKGRPPEEEPFITHGFTMTTEVPLRDVLEAIAET
-AFKTSPYPVILSFENHVDSAKQQAKMAEYCRSIFGDALLIEPLDKYPLAPGVPLPSPQDLMGRILVKNKKRPKKPTTDEG
-TASSEVNATEEMSTLVNYIEPVKFKSFEAARKRNKCFEMSSFVETKAMEQLTKSPMEFVEYNKQQLSRIYPKGTRVDSSN
-YMPQLFWNVGCQLVALNFQTLDVAMQLNAGVFEYNGRSGYLLKPEFMRRPDKSFDPFTEVIVDGIVANALRVKVISGQFL
-SDRKVGIYVEVDMFGLPVDTRRKYRTRTSQGNSFNPVWDEEPFDFPKVVLPTLASLRIAAFEEGGKFVGHRILPVSAIRS
-GYHYVCLRNEANQPLCLPALLIYTEASDYIPDDHQDYAEALINPIKHVSLMDQRARQLAALIGESEAQAGQET"""
-
-print search(hmm, hmmseq(query.replace('\n','')))
+print run(hmm, sys.argv[1])
+print search(hmm, query)
