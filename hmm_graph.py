@@ -21,7 +21,7 @@ class HMM_graph:
     return self.norm(v)
 
   @staticmethod
-  def frequency_distribution(seq, smooth=0.00001):
+  def frequency_distribution(seq, smooth=0.1):
     """returns a distribution representing the frequency of aas in seq"""
     freq = [0 for i in range(1,23)]
     for aa in seq:

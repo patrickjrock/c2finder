@@ -10,14 +10,14 @@ def get_records(fname):
       record = "" 
     if line[0] != '>':
       record += line[:-1]
+  records.append(record)
   return records
 
 def count_emissions(labels, data):
-  e = [[] for i in range(0,max(labels)]
+  e = [[] for i in range(0,max(labels))]
   for i in range(0, len(labels)):
     if data[i] != '-':
       state = int(labels[i])
-      print state
       e[state-1].append(data[i])
   return e
 
