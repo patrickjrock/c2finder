@@ -47,7 +47,10 @@ def search(model, query, window_size=150):
   maxq = ""
 
   if len(query) < window_size:
-    return -1, model.score(query)
+    states = model.predict(query)
+    print states
+    query = [x[0] for x in query]
+    return -1, model.score(query), zip(int2seq(query), states)
 
   for i in range(0,len(query)-window_size+1):
     subquery = query[i:i+window_size]

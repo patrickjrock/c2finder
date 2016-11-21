@@ -5,6 +5,18 @@ from fasta import *
 import numpy as np
 import sys
 from evaluate import *
+from Bio import SeqIO
+from unsupervised import *
+from utils import *
+
+def remove_dead_states(A):
+  """transition matrix can have states with no outgoing edges
+     make these point to the end state for now, should reshape 
+     matrix and stuff later"""
+  for a in A:
+    if sum(a) == 0:
+      a[len(a)-1] = 1
+  return A
 
 # set up labels for supervised learning
 labels = []
@@ -60,8 +72,30 @@ hmm.startprob_ = np.array(I)
 hmm.emissionprob_ = np.array(E)
 hmm.transmat_ = A
 
-protein = Fasta(sys.argv[1])
-query = protein.hmmseq()
 
-print run(hmm, sys.argv[1])
-print search(hmm, query)
+# Try unsupervised stuff
+type1 = [s.seq.tostring() for s in SeqIO.parse(open('fasta/type1.fasta'), 'fasta')]
+type2 = [s.seq.tostring() for s in SeqIO.parse(open('fasta/type2.fasta'), 'fasta')]
+
+training_seqs = type1[:len(type1)/2] + type2[:len(type2)/2]
+print training_seqs
+training_seqs = map(hmmseq, training_seqs)
+
+tA, tE = fit(hmm, training_seqs)
+
+thmm = MultinomialHMM(max(labels))
+thmm.startprob_ = np.array(I)
+thmm.emissionprob_ = tE
+thmm.transmat_ = remove_dead_states(tA)
+
+
+#query = hmmseq("KECDRKFRVKIRGIDIPVLPRNTDLTVFVEANIQHGQQVLCQRRTSPKPFTEEVLWNVWLEFSIKIKDLPKGALLNLQIYCLLYYVNLLLIDHRFLLRRGEYVLHMWQISGFNADKLTSATNPDKENSMSISILLDN")
+#maxi, maxs, pred = search(hmm, query)
+
+#pretty_print_prediction(pred)
+#print maxs
+
+query = Fasta(sys.argv[1]).hmmseq()
+index, score, pred = search(thmm, query)
+pretty_print_prediction(pred)
+print score
